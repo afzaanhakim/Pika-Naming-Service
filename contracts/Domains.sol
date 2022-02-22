@@ -25,6 +25,9 @@ contract Domains is ERC721URIStorage { //contract inheritance to use functions f
   mapping (string => string) public twitter; //storing twitter handles 
   mapping (string => string) public professions; //storing profession
   mapping (string => string) public pfp; //storing profile picture
+  mapping(uint => string) public names;
+
+
   constructor(string memory _maindomain)  ERC721 ("PIKA Name Service", "PNS") payable {
     owner = payable(msg.sender);
     maindomain = _maindomain;
@@ -33,7 +36,9 @@ contract Domains is ERC721URIStorage { //contract inheritance to use functions f
   }
 
   //a function for price of domain based on length of characters in domain
-
+error Unauthorized();
+error AlreadyRegistered();
+error InvalidName(string name);
   function price(string calldata name) public pure returns(uint){
     uint len = StringUtils.strlen(name);
     require(len > 0);
@@ -48,7 +53,23 @@ contract Domains is ERC721URIStorage { //contract inheritance to use functions f
     }
   }
 
+  function getAllNames() public view returns (string[] memory) {//function to get all names associated
+    console.log("Getting all names from contract");
+    string[] memory allNames = new string[](_tokenIds.current());
+    for(uint i = 0; i < _tokenIds.current(); i++) {
+      allNames[i] = names[i];
+      console.log("Name for token %d is %s", i, allNames[i]);
+    }
+    return allNames;
+  }
+
+  function isValid(string calldata name) public pure returns(bool) {
+    return StringUtils.strlen(name) >= 3 && StringUtils.strlen(name) <= 10;
+  }
+
   function register (string calldata name) public payable { //a register function that takes name as parameter and assignes it to whoeevr calls this func on the chain (msg.sender) and adds the name to the domains mapping - calldata is the location of the where name argument should be stored. I am storing in calldata so it takes less gas.
+  	if (domains[name] != address(0)) revert AlreadyRegistered();
+    if (!isValid(name)) revert InvalidName(name);
     require(domains[name] == address(0));//checking to see if name is unregistered i.e there are 0 address for that name inside the domains mapping
     uint _price = price(name); //calculating price of the name used
    // Check if enough Matic was paid in the transaction
@@ -91,6 +112,7 @@ contract Domains is ERC721URIStorage { //contract inheritance to use functions f
     domains[name] = msg.sender; 
     console.log("%s has register a domain", msg.sender);
     console.log("%s has cost", domains[name], _price);
+    names[newRecordId] = name;
     _tokenIds.increment();
   }
 
@@ -99,8 +121,8 @@ contract Domains is ERC721URIStorage { //contract inheritance to use functions f
   }
 
   function setRecord(string calldata name, string calldata record) public {
-    require(domains[name] == msg.sender); //using require as a prereq to check if the name belongs to the person calling the function then setting the record for that name to map to the record;
-    records[name] = record;
+    if (msg.sender != domains[name]) revert Unauthorized();
+      records[name] = record;
   }
 
   function getRecord(string calldata name) public view returns(string memory) {

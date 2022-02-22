@@ -26,7 +26,7 @@ const main = async () => {
     txn = await domainContract.connect(randomUser).withdraw();
     await txn.wait();
   } catch (error) {
-    console.log(error, "could not hack");
+    console.log("could not hack");
   }
 
   let ownerBalance = await hre.ethers.provider.getBalance(owner.address);
