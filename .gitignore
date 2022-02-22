@@ -1,9 +1,12 @@
 node_modules
+hardhat.config.js
 .env
 coverage
 coverage.json
 typechain
+package-lock.json
 
 #Hardhat files
 cache
 artifacts
+

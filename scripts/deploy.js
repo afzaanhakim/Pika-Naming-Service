@@ -5,30 +5,34 @@ const main = async () => {
 
   console.log("deployed to:", domainContract.address);
 
-  let txn = await domainContract.register("trouble", {value: hre.ethers.utils.parseEther('0.1')}); //registering "trouble"
+  let txn = await domainContract.register("feraligatr", {value: hre.ethers.utils.parseEther('0.1')}); //registering "trouble"
   await txn.wait();
 
+  console.log("minted  feraligatr.pika")
   
+  txn = await domainContract.setRecord("feraligatr", "hydro pump!");
+  await txn.wait();
+  console.log("record set for feraligatr.pika")
 
-  const domainOwnerAddress = await domainContract.getAddress("trouble");
-  console.log("Owner of `trouble` ", domainOwnerAddress);
+  const domainOwnerAddress = await domainContract.getAddress("feraligatr");
+  console.log("Owner of `feraligatr` ", domainOwnerAddress);
 
   const balance = await hre.ethers.provider.getBalance(domainContract.address);
   console.log("Contract balance for Pika Naming Service", hre.ethers.utils.formatEther(balance));
 
-  // Trying to set a email 
-  txn = await domainContract.setEmail("trouble","trouble@fraud.com");
+  // Trying to set a email --- feraligatr not set yet
+  txn = await domainContract.setEmail("feraligatr","roar@pika.com");
   await txn.wait();
 
   //trying to set twitter handle
-  txn = await domainContract.setTwitter("trouble", "@troublesome");
+  txn = await domainContract.setTwitter("feralligatr", "@croc");
   await txn.wait();
 
   //trying to set profession
-  txn = await domainContract.setProfession("trouble", "memeartist");
+  txn = await domainContract.setProfession("feralligatr", "full-time pokemon");
   await txn.wait();
 //set a display pic
-  txn = await domainContract.setPFP("trouble", "https://cloudflare-ipfs.com/ipfs/QmUKHB3EZmeakGHyQDmpSHBxUuYTDjG45Yksq6XXU2RiaG");
+  txn = await domainContract.setPFP("feralligatr", "https://cloudflare-ipfs.com/ipfs/QmaXAjnCQyyH57r94eJ8RcvTYNJfqzQT6K4iiB7MVTVVFU");
   await txn.wait();
 };
 
