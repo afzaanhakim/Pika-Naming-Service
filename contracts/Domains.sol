@@ -9,6 +9,7 @@ import { StringUtils } from "./libraries/StringUtils.sol";
 import "hardhat/console.sol";
 
 contract Domains is ERC721URIStorage { //contract inheritance to use functions for an ERC721 contract//making this an ERC721 contract.
+  address payable public owner;
 
   using Counters for Counters.Counter;
 
@@ -24,7 +25,8 @@ contract Domains is ERC721URIStorage { //contract inheritance to use functions f
   mapping (string => string) public twitter; //storing twitter handles 
   mapping (string => string) public professions; //storing profession
   mapping (string => string) public pfp; //storing profile picture
-  constructor(string memory _maindomain) payable ERC721("PIKA Name Service", "PNS") {
+  constructor(string memory _maindomain)  ERC721 ("PIKA Name Service", "PNS") payable {
+    owner = payable(msg.sender);
     maindomain = _maindomain;
     console.log("%s name service deployed", _maindomain);
     console.log("PIKA CONTRACT");
@@ -36,13 +38,13 @@ contract Domains is ERC721URIStorage { //contract inheritance to use functions f
     uint len = StringUtils.strlen(name);
     require(len > 0);
     if(len == 3) {
-      return 1 * 10**17; // 5 MATIC = 5 000 000 000 000 000 000 (18 decimals). 0.5 Matic cause the faucets don't give a lot
+      return 0.5 * 10**17; // 5 MATIC = 5 000 000 000 000 000 000 (18 decimals). 0.5 Matic cause the faucets don't give a lot
     }
     else if(len == 4) {
-      return 0.5 * 10**17; //reducing price if characters are higher
+      return 0.3 * 10**17; //reducing price if characters are higher
     }
     else {
-      return 0.3 * 10**17;
+      return 0.1 * 10**17;
     }
   }
 
@@ -139,5 +141,21 @@ contract Domains is ERC721URIStorage { //contract inheritance to use functions f
 
   function getPFP(string calldata name) public view returns(string memory){
     return pfp[name];
+  }
+
+  modifier onlyOwner() { //modifier to check if caller of function is the owner
+    require(isOwner());
+    _;
+  }
+
+  function isOwner() public view returns (bool) {
+    return msg.sender == owner;
+  }
+
+  function withdraw() public onlyOwner {
+    console.log("hit the withdraw function");
+    uint amount = address(this).balance;
+    (bool success, ) = msg.sender.call{value: amount}("");
+    require(success, "Failed to withdraw Matic");
   }
 }

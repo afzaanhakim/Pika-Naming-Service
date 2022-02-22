@@ -5,35 +5,40 @@ const main = async () => {
 
   console.log("deployed to:", domainContract.address);
 
-  let txn = await domainContract.register("feraligatr", {value: hre.ethers.utils.parseEther('0.1')}); //registering "trouble"
+  let txn = await domainContract.register("cooler", {value: hre.ethers.utils.parseEther('0.1')}); //registering "trouble"
   await txn.wait();
 
-  console.log("minted  feraligatr.pika")
+  console.log("minted cooler.pika")
   
-  txn = await domainContract.setRecord("feraligatr", "hydro pump!");
+  txn = await domainContract.setRecord("cooler", "cold as ice");
   await txn.wait();
-  console.log("record set for feraligatr.pika")
+  console.log("record set for cooler.pika");
+   // Trying to set a email --- cooler not set yet
+   txn = await domainContract.setEmail("cooler","cold@pika.com");
+   await txn.wait();
+   console.log("email set for cooler.pika");
+ 
+   //trying to set twitter handle
+   txn = await domainContract.setTwitter("cooler", "@cubicle");
+   await txn.wait();
+   console.log("twitter set for cooler.pika, cubicle");
+ 
+   //trying to set profession
+   txn = await domainContract.setProfession("cooler", "full-time water");
+   await txn.wait();
+   console.log("profession set for cooler.pika");
+ //set a display pic
+   txn = await domainContract.setPFP("cooler", "");
+   await txn.wait();
+   console.log("pfp set for cooler.pika");
 
-  const domainOwnerAddress = await domainContract.getAddress("feraligatr");
-  console.log("Owner of `feraligatr` ", domainOwnerAddress);
+  const domainOwnerAddress = await domainContract.getAddress("cooler");
+  console.log("Owner of `cooler` ", domainOwnerAddress);
 
   const balance = await hre.ethers.provider.getBalance(domainContract.address);
   console.log("Contract balance for Pika Naming Service", hre.ethers.utils.formatEther(balance));
 
-  // Trying to set a email --- feraligatr not set yet
-  txn = await domainContract.setEmail("feraligatr","roar@pika.com");
-  await txn.wait();
-
-  //trying to set twitter handle
-  txn = await domainContract.setTwitter("feralligatr", "@croc");
-  await txn.wait();
-
-  //trying to set profession
-  txn = await domainContract.setProfession("feralligatr", "full-time pokemon");
-  await txn.wait();
-//set a display pic
-  txn = await domainContract.setPFP("feralligatr", "https://cloudflare-ipfs.com/ipfs/QmaXAjnCQyyH57r94eJ8RcvTYNJfqzQT6K4iiB7MVTVVFU");
-  await txn.wait();
+ 
 };
 
 const runMain = async () => {
